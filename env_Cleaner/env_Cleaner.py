@@ -3,6 +3,7 @@ import maze
 import random
 import cv2
 
+
 class EnvCleaner(object):
     def __init__(self, N_agent, map_size, seed):
         self.map_size = map_size
@@ -10,8 +11,8 @@ class EnvCleaner(object):
         self.occupancy = self.generate_maze(seed)
         self.N_agent = N_agent
         self.agt_pos_list = []
-        for i in range(self.N_agent):
-            self.agt_pos_list.append([1, 1])
+        self.agt_pos_list.append([1, 1])
+        self.agt_pos_list.append([1, 1])
 
     def generate_maze(self, seed):
         symbols = {
@@ -35,23 +36,34 @@ class EnvCleaner(object):
 
     def step(self, action_list):
         reward = 0
+        next_state = 0
+        done = False
         for i in range(len(action_list)):
-            if action_list[i] == 0:     # up
+            if action_list[i] == 0:  # up
                 if self.occupancy[self.agt_pos_list[i][0] - 1][self.agt_pos_list[i][1]] != 1:  # if can move
                     self.agt_pos_list[i][0] = self.agt_pos_list[i][0] - 1
-            if action_list[i] == 1:     # down
+                    print(self.agt_pos_list[i][0])
+                    next_state = self.agt_pos_list[i][0]
+            if action_list[i] == 1:  # down
                 if self.occupancy[self.agt_pos_list[i][0] + 1][self.agt_pos_list[i][1]] != 1:  # if can move
                     self.agt_pos_list[i][0] = self.agt_pos_list[i][0] + 1
-            if action_list[i] == 2:     # left
+                    print(self.agt_pos_list[i][0])
+                    next_state = self.agt_pos_list[i][0]
+            if action_list[i] == 2:  # left
                 if self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1] - 1] != 1:  # if can move
                     self.agt_pos_list[i][1] = self.agt_pos_list[i][1] - 1
-            if action_list[i] == 3:     # right
+                    print(self.agt_pos_list[i][1])
+                    next_state = self.agt_pos_list[i][1]
+            if action_list[i] == 3:  # right
                 if self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1] + 1] != 1:  # if can move
                     self.agt_pos_list[i][1] = self.agt_pos_list[i][1] + 1
-            if self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1]] == 2:   # if the spot is dirty
+                    print(self.agt_pos_list[i][1])
+                    next_state = self.agt_pos_list[i][1]
+            if self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1]] == 2:  # if the spot is dirty
                 self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1]] = 0
                 reward = reward + 1
-        return reward
+            if self.isDone(self.occupancy): done = True
+        return next_state, reward, done
 
     def get_global_obs(self):
         obs = np.zeros((self.map_size, self.map_size, 3))
@@ -79,15 +91,24 @@ class EnvCleaner(object):
 
     def render(self):
         obs = self.get_global_obs()
-        enlarge = 5
-        new_obs = np.ones((self.map_size*enlarge, self.map_size*enlarge, 3))
+        enlarge = 50
+        new_obs = np.ones((self.map_size * enlarge, self.map_size * enlarge, 3))
         for i in range(self.map_size):
             for j in range(self.map_size):
                 if obs[i][j][0] == 0.0 and obs[i][j][1] == 0.0 and obs[i][j][2] == 0.0:
-                    cv2.rectangle(new_obs, (i * enlarge, j * enlarge), (i * enlarge + enlarge, j * enlarge + enlarge), (0, 0, 0), -1)
+                    cv2.rectangle(new_obs, (i * enlarge, j * enlarge), (i * enlarge + enlarge, j * enlarge + enlarge),
+                                  (0, 0, 0), -1)
                 if obs[i][j][0] == 1.0 and obs[i][j][1] == 0.0 and obs[i][j][2] == 0.0:
-                    cv2.rectangle(new_obs, (i * enlarge, j * enlarge), (i * enlarge + enlarge, j * enlarge + enlarge), (0, 0, 255), -1)
+                    cv2.rectangle(new_obs, (i * enlarge, j * enlarge), (i * enlarge + enlarge, j * enlarge + enlarge),
+                                  (0, 0, 255), -1)
                 if obs[i][j][0] == 0.0 and obs[i][j][1] == 1.0 and obs[i][j][2] == 0.0:
-                    cv2.rectangle(new_obs, (i * enlarge, j * enlarge), (i * enlarge + enlarge, j * enlarge + enlarge), (0, 255, 0), -1)
+                    cv2.rectangle(new_obs, (i * enlarge, j * enlarge), (i * enlarge + enlarge, j * enlarge + enlarge),
+                                  (0, 255, 0), -1)
         cv2.imshow('image', new_obs)
         cv2.waitKey(10)
+
+    def isDone(self, occupancy):
+        for row in occupancy:
+            if 2 in row:
+                return False
+        return True
