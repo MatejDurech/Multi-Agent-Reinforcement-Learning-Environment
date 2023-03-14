@@ -4,6 +4,7 @@ import random
 import cv2
 
 
+
 class EnvCleaner(object):
     def __init__(self, N_agent, map_size, seed):
         self.map_size = map_size
@@ -42,23 +43,23 @@ class EnvCleaner(object):
             if action_list[i] == 0:  # up
                 if self.occupancy[self.agt_pos_list[i][0] - 1][self.agt_pos_list[i][1]] != 1:  # if can move
                     self.agt_pos_list[i][0] = self.agt_pos_list[i][0] - 1
-                    print(self.agt_pos_list[i][0])
-                    next_state = self.agt_pos_list[i][0]
+                    #print(self.agt_pos_list[i][0])
+                next_state = self.agt_pos_list[i]
             if action_list[i] == 1:  # down
                 if self.occupancy[self.agt_pos_list[i][0] + 1][self.agt_pos_list[i][1]] != 1:  # if can move
                     self.agt_pos_list[i][0] = self.agt_pos_list[i][0] + 1
-                    print(self.agt_pos_list[i][0])
-                    next_state = self.agt_pos_list[i][0]
+                    #print(self.agt_pos_list[i][0])
+                next_state = self.agt_pos_list[i]
             if action_list[i] == 2:  # left
                 if self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1] - 1] != 1:  # if can move
                     self.agt_pos_list[i][1] = self.agt_pos_list[i][1] - 1
-                    print(self.agt_pos_list[i][1])
-                    next_state = self.agt_pos_list[i][1]
+                    #print(self.agt_pos_list[i][1])
+                next_state = self.agt_pos_list[i]
             if action_list[i] == 3:  # right
                 if self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1] + 1] != 1:  # if can move
                     self.agt_pos_list[i][1] = self.agt_pos_list[i][1] + 1
-                    print(self.agt_pos_list[i][1])
-                    next_state = self.agt_pos_list[i][1]
+                    #print(self.agt_pos_list[i][1])
+                next_state = self.agt_pos_list[i]
             if self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1]] == 2:  # if the spot is dirty
                 self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1]] = 0
                 reward = reward + 1

@@ -1,5 +1,4 @@
 import random
-import numpy as np
 from env_Cleaner import EnvCleaner
 from heapq import heappop, heappush
 import copy
