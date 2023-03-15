@@ -194,8 +194,8 @@ if __name__ == '__main__':
             agent_b_path = agent_b_paths[0].getPath()
         print(fromPathMakeDirection(agent_a_path, env.agt_pos_list[0][0], env.agt_pos_list[0][1]))
         print(fromPathMakeDirection(agent_b_path, env.agt_pos_list[1][0], env.agt_pos_list[1][1]))
-        action_list = [fromPathMakeDirection(agent_a_path, env.agt_pos_list[0][0], env.agt_pos_list[0][1]), fromPathMakeDirection(agent_b_path, env.agt_pos_list[1][0], env.agt_pos_list[1][1])]
-        next_state, reward, done = env.step(action_list)
-        print('reward', reward, next_state, done)
+        #action_list = [fromPathMakeDirection(agent_a_path, env.agt_pos_list[0][0], env.agt_pos_list[0][1]), fromPathMakeDirection(agent_b_path, env.agt_pos_list[1][0], env.agt_pos_list[1][1])]
+        next_state, reward, done = env.step(fromPathMakeDirection(agent_a_path, env.agt_pos_list[0][0], env.agt_pos_list[0][1]), 0)
+        next_state, reward, done = env.step(fromPathMakeDirection(agent_b_path, env.agt_pos_list[1][0], env.agt_pos_list[1][1]), 1)
 
 

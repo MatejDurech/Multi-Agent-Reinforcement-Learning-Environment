@@ -35,37 +35,32 @@ class EnvCleaner(object):
                     grid_map[i][j] = 2
         return grid_map
 
-    def step(self, action_list):
+    def step(self, action_list, num):
         reward = 0
         next_state = 0
         done = False
-        for i in range(len(action_list)):
-            if action_list[i] == 0:  # up
-                if self.occupancy[self.agt_pos_list[i][0] - 1][self.agt_pos_list[i][1]] != 1:  # if can move
-                    self.agt_pos_list[i][0] = self.agt_pos_list[i][0] - 1
-                    #print(self.agt_pos_list[i][0])
-                next_state = self.agt_pos_list[i]
-            if action_list[i] == 1:  # down
-                if self.occupancy[self.agt_pos_list[i][0] + 1][self.agt_pos_list[i][1]] != 1:  # if can move
-                    self.agt_pos_list[i][0] = self.agt_pos_list[i][0] + 1
-                    #print(self.agt_pos_list[i][0])
-                next_state = self.agt_pos_list[i]
-            if action_list[i] == 2:  # left
-                if self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1] - 1] != 1:  # if can move
-                    self.agt_pos_list[i][1] = self.agt_pos_list[i][1] - 1
-                    #print(self.agt_pos_list[i][1])
-                next_state = self.agt_pos_list[i]
-            if action_list[i] == 3:  # right
-                if self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1] + 1] != 1:  # if can move
-                    self.agt_pos_list[i][1] = self.agt_pos_list[i][1] + 1
-                    #print(self.agt_pos_list[i][1])
-                next_state = self.agt_pos_list[i]
-            if self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1]] == 0:  # if the spot clear
-                reward = reward - 0.5
-            if self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1]] == 2:  # if the spot is dirty
-                self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1]] = 0
-                reward = reward + 1
-            if self.isDone(self.occupancy): done = True
+        if action_list == 0:  # up
+            if self.occupancy[self.agt_pos_list[num][0] - 1][self.agt_pos_list[num][1]] != 1:  # if can move
+                self.agt_pos_list[num][0] = self.agt_pos_list[num][0] - 1
+            next_state = self.agt_pos_list[num]
+        if action_list == 1:  # down
+            if self.occupancy[self.agt_pos_list[num][0] + 1][self.agt_pos_list[num][1]] != 1:  # if can move
+                self.agt_pos_list[num][0] = self.agt_pos_list[num][0] + 1
+            next_state = self.agt_pos_list[num]
+        if action_list == 2:  # left
+            if self.occupancy[self.agt_pos_list[num][0]][self.agt_pos_list[num][1] - 1] != 1:  # if can move
+                self.agt_pos_list[num][1] = self.agt_pos_list[num][1] - 1
+            next_state = self.agt_pos_list[num]
+        if action_list == 3:  # right
+            if self.occupancy[self.agt_pos_list[num][0]][self.agt_pos_list[num][1] + 1] != 1:  # if can move
+                self.agt_pos_list[num][1] = self.agt_pos_list[num][1] + 1
+            next_state = self.agt_pos_list[num]
+        if self.occupancy[self.agt_pos_list[num][0]][self.agt_pos_list[num][1]] == 0:  # if the spot clear
+            reward = reward - 0.5
+        if self.occupancy[self.agt_pos_list[num][0]][self.agt_pos_list[num][1]] == 2:  # if the spot is dirty
+            self.occupancy[self.agt_pos_list[num][0]][self.agt_pos_list[num][1]] = 0
+            reward = reward + 1
+        if self.isDone(self.occupancy): done = True
         return next_state, reward, done
 
     def get_global_obs(self):
