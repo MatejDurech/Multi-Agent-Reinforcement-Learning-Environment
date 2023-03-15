@@ -60,6 +60,8 @@ class EnvCleaner(object):
                     self.agt_pos_list[i][1] = self.agt_pos_list[i][1] + 1
                     #print(self.agt_pos_list[i][1])
                 next_state = self.agt_pos_list[i]
+            if self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1]] == 0:  # if the spot clear
+                reward = reward - 0.5
             if self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1]] == 2:  # if the spot is dirty
                 self.occupancy[self.agt_pos_list[i][0]][self.agt_pos_list[i][1]] = 0
                 reward = reward + 1
