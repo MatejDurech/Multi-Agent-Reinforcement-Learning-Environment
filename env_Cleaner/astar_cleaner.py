@@ -162,9 +162,10 @@ def fromPathMakeDirection(path, start_pos_x, start_pos_y):
 
 
 if __name__ == '__main__':
-    env = EnvCleaner(2, 15, 6) # pouzivat seedy[2,4,6]
+    env = EnvCleaner(2, 9, 6) # pouzivat seedy[2,4,6]
     max_iter = 1000
     done = False
+    timestep = 0
     #array = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     #         [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1],
     #         [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 2, 1],
@@ -197,5 +198,9 @@ if __name__ == '__main__':
         #action_list = [fromPathMakeDirection(agent_a_path, env.agt_pos_list[0][0], env.agt_pos_list[0][1]), fromPathMakeDirection(agent_b_path, env.agt_pos_list[1][0], env.agt_pos_list[1][1])]
         next_state, reward, done = env.step(fromPathMakeDirection(agent_a_path, env.agt_pos_list[0][0], env.agt_pos_list[0][1]), 0)
         next_state, reward, done = env.step(fromPathMakeDirection(agent_b_path, env.agt_pos_list[1][0], env.agt_pos_list[1][1]), 1)
+
+        timestep +=2
+
+    print(timestep)
 
 
