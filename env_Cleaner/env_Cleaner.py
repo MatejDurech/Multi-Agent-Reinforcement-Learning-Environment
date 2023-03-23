@@ -70,7 +70,7 @@ class EnvCleaner(object):
             reward = -5
         if self.occupancy[self.agt_pos_list[num][0]][self.agt_pos_list[num][1]] == 2:  # if the spot is dirty
             self.occupancy[self.agt_pos_list[num][0]][self.agt_pos_list[num][1]] = 0
-            reward = 5
+            reward = 300
         if self.isDone(self.occupancy): done = True
         return next_state, reward, done
 
@@ -107,12 +107,12 @@ class EnvCleaner(object):
             if self.isDone(self.occupancy): done = True
             return next_state, reward, done
         if self.occupancy[self.agt_pos_list[num][0]][self.agt_pos_list[num][1]] == 0:  # if the spot clear
-            reward = -1.5
+            reward = -33
             if self.isDone(self.occupancy): done = True
             return next_state, reward, done
         if self.occupancy[self.agt_pos_list[num][0]][self.agt_pos_list[num][1]] == 2:  # if the spot is dirty
             self.occupancy[self.agt_pos_list[num][0]][self.agt_pos_list[num][1]] = 0
-            reward = 3
+            reward = 30
             if self.isDone(self.occupancy): done = True
             return next_state, reward, done
 

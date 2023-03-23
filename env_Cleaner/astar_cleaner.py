@@ -162,8 +162,7 @@ def fromPathMakeDirection(path, start_pos_x, start_pos_y):
 
 
 if __name__ == '__main__':
-    env = EnvCleaner(2, 9, 6) # pouzivat seedy[2,4,6]
-    max_iter = 1000
+    env = EnvCleaner(2, 7, 9) # pouzivat seedy[2,4,6]
     done = False
     timestep = 0
     #array = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],

@@ -9,31 +9,34 @@ def changePosToY(width, x, y):
 
 
 if __name__ == '__main__':
-    width = 9
-    env = EnvCleaner(2, width, 6) # [7,5] [7.6]
+    width = 7
+    env = EnvCleaner(2, width, 3)  # [7,5] [7.6]
     num_of_2 = env.numOf2()
-    max_iter = 6003
-    q = np.zeros((pow(width, 2) * num_of_2, 4))
-    print((pow(width, 2) * num_of_2 + 1))
-    discount_factor = 0.9
-    learning_rate = 0.1
+    max_iter = 6000
+
+    q1 = np.zeros((pow(width, 2), pow(width, 2), num_of_2 + 1, 4))
+    q2 = np.zeros((pow(width, 2), pow(width, 2), num_of_2 + 1, 4))
+
+    discount_factor1 = 0.90
+    discount_factor2 = 0.90
+    learning_rate1 = 0.05
+    learning_rate2 = 0.05
     epsilon = 1.0
     list_of_timesteps = list()
-    print(env.occupancy)
     help_time_step = 0
 
     env.reset()
-    state = [1, 1]
+    state1 = [1, 1]
+    state2 = [1, 1]
     done = False
     timesteps = 0
     reward_xd = 0
 
-    print(env.numOf2())
-
     for episode in range(max_iter):
 
         env.reset()
-        state = [1, 1]
+        state1 = [1, 1]
+        state2 = [1, 1]
         done = False
         timesteps = 0
         reward_xd = 0
@@ -44,84 +47,94 @@ if __name__ == '__main__':
 
             epsilon = 0.05 + (1 - 0.05) * np.exp(-0.0005 * episode)
 
-            state__ = changePosToY(width, state[0], state[1])
-
-            state_ = (state__ * num_of_2 + state__) + env.numOf2()
+            state1__ = changePosToY(width, state1[0], state1[1])
+            state2__ = changePosToY(width, state2[0], state2[1])
 
             if np.random.uniform(0, 1) < epsilon:
-                action = random.randint(0, 3)
+                action1 = random.randint(0, 3)
             else:
-                action = np.argmax(q[state_, :])
+                action1 = np.argmax(q1[state1__][state2__][env.numOf2()])
+            if np.random.uniform(0, 1) < epsilon:
+                action2 = random.randint(0, 3)
+            else:
+                action2 = np.argmax(q2[state2__][state1__][env.numOf2()])
 
-            next_state, reward, done = env.stepRL(action, 0)
+            next_state1, reward1, done = env.stepRL(action1, 0)
+            next_state2, reward2, done = env.stepRL(action2, 1)
 
-            next_state__ = changePosToY(width, next_state[0], next_state[1])
+            next_state1__ = changePosToY(width, next_state1[0], next_state1[1])
+            next_state2__ = changePosToY(width, next_state2[0], next_state2[1])
 
-            next_state_ = (next_state__ * num_of_2 + next_state__) + env.numOf2()
+            if done:
+                q1[state1__][state2__][env.numOf2()][action1] = q1[state1__][state2__][env.numOf2()][
+                                                                    action1] + learning_rate1 * (reward1 -
+                                                                                                 q1[state1__][state2__][
+                                                                                                     env.numOf2()][
+                                                                                                     action1])
+            else:
+                q1[state1__][state2__][env.numOf2()][action1] = q1[state1__][state2__][env.numOf2()][
+                                                                    action1] + learning_rate1 * (
+                                                                        reward1 + discount_factor1 * np.max(
+                                                                    q1[next_state1__][next_state2__][
+                                                                        env.numOf2()]) -
+                                                                        q1[state1__][state2__][env.numOf2()][
+                                                                            action1])
+            if done:
+                q2[state2__][state1__][env.numOf2()][action2] = q2[state2__][state1__][env.numOf2()][
+                                                                    action2] + learning_rate2 * (reward2 -
+                                                                                                 q2[state2__][state1__][
+                                                                                                     env.numOf2()][
+                                                                                                     action2])
+            else:
+                q2[state2__][state1__][env.numOf2()][action2] = q2[state2__][state1__][env.numOf2()][
+                                                                    action2] + learning_rate2 * (
+                                                                        reward2 + discount_factor2 * np.max(
+                                                                    q2[next_state2__][next_state1__][
+                                                                        env.numOf2()]) -
+                                                                        q2[state2__][state1__][env.numOf2()][
+                                                                            action2])
 
-            #if done:
-            #    q[state_][action] = q[state_][action] + learning_rate * (reward - q[state_][action])
-            #else:
-            q[state_][action] = q[state_][action] + learning_rate * (reward + discount_factor * np.max(q[next_state_, :]) - q[state_][action])
+            state1 = next_state1
+            state2 = next_state2
 
-            # q[state_][action] = reward + discount_factor * np.max(q[next_state_,:])
+            timesteps += 2
+            help_time_step += 2
 
-            state = next_state
+            reward_xd += reward1
 
-            timesteps += 1
-            help_time_step += 1
-
-            reward_xd += reward
-
-
-        print(epsilon, episode, help_time_step, reward_xd)
-        help_time_step = 0
+        if episode % 50 == 0:
+            print(epsilon, episode, help_time_step / 50, reward_xd)
+            help_time_step = 0
         list_of_timesteps.append(
             f"Training {episode} finished, with epsilon {timesteps:.2f} steps  w reward_xd {reward_xd}")
 
     for timestep in list_of_timesteps:
         print(timestep)
-    print(q)
 
     env.reset()
-    state = [1, 1]
+    state1 = [1, 1]
+    state2 = [1, 1]
     done = False
     timesteps = 0
     reward_xd = 0
-
+    help_time_step = 0
     while not done:
         env.render()
 
-        state__ = changePosToY(width, state[0], state[1])
+        state1__ = changePosToY(width, state1[0], state1[1])
+        state2__ = changePosToY(width, state2[0], state2[1])
 
-        state_ = (state__ * num_of_2 + state__) + env.numOf2()
+        action1 = np.argmax(q1[state1__][state2__][env.numOf2()])
 
-        action = np.argmax(q[state_, :])
+        action2 = np.argmax(q2[state2__][state1__][env.numOf2()])
 
-        next_state, reward, done = env.stepRL(action, 0)
+        next_state1, reward1, done = env.stepRL(action1, 0)
+        next_state2, reward2, done = env.stepRL(action2, 1)
 
-        next_state__ = changePosToY(width, next_state[0], next_state[1])
+        state1 = next_state1
+        state2 = next_state2
 
-        next_state_ = (next_state__ * num_of_2 + next_state__) + env.numOf2()
+        timesteps += 2
+        help_time_step += 2
 
-        state = next_state
-
-        timesteps += 1
-
-        help_time_step += 1
-
-        reward_xd += reward
-
-    list_of_timesteps.append(
-        f"Training {episode} finished, with epsilon {timesteps:.2f} steps  w reward_xd {reward_xd}")
-
-    for timestep in list_of_timesteps:
-        print(timestep)
-    print(q)
-    # print(q)
-    # print(changePosToY(4,2,2))
-    # print("iter= ", i)
-    # env.render()
-    # action_list = [random.randint(0, 3), random.randint(0, 3)]
-    # reward = env.step(action_list)
-    # print('reward', reward)
+    print(help_time_step)
