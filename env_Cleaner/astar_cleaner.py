@@ -2,6 +2,7 @@ import random
 from env_Cleaner import EnvCleaner
 from heapq import heappop, heappush
 import copy
+import time
 
 
 class Path:
@@ -146,8 +147,8 @@ def astar(start_x, start_y, grid):
     else:
         pathsToReturn.append(defPaths[0])
         pathsToReturn.append(defPaths[1])
-    for path in pathsToReturn:
-        print(path.getPath())
+    #for path in pathsToReturn:
+        #print(path.getPath())
     return pathsToReturn
 
 
@@ -162,7 +163,7 @@ def fromPathMakeDirection(path, start_pos_x, start_pos_y):
 
 
 if __name__ == '__main__':
-    env = EnvCleaner(2, 7, 9) # pouzivat seedy[2,4,6]
+    env = EnvCleaner(2, 16)
     done = False
     timestep = 0
     #array = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -181,19 +182,24 @@ if __name__ == '__main__':
 
     while 1:
         env.render()
+        #time.sleep(1)
         if done: break
         agent_a_paths = astar(env.agt_pos_list[0][0], env.agt_pos_list[0][1], env.occupancy)
         agent_b_paths = astar(env.agt_pos_list[1][0], env.agt_pos_list[1][1], env.occupancy)
         agent_a_path = []
         agent_b_path = []
         if agent_a_paths[0].getPath()[-1] == agent_b_paths[0].getPath()[-1] and len(agent_b_paths) > 1:
-            agent_a_path = agent_a_paths[0].getPath()
-            agent_b_path = agent_b_paths[1].getPath()
+            if(len(agent_a_paths[0].getPath()) < len(agent_a_paths[0].getPath())):
+                agent_a_path = agent_a_paths[0].getPath()
+                agent_b_path = agent_b_paths[1].getPath()
+            else:
+                agent_a_path = agent_a_paths[1].getPath()
+                agent_b_path = agent_b_paths[0].getPath()
         else:
             agent_a_path = agent_a_paths[0].getPath()
             agent_b_path = agent_b_paths[0].getPath()
-        print(fromPathMakeDirection(agent_a_path, env.agt_pos_list[0][0], env.agt_pos_list[0][1]))
-        print(fromPathMakeDirection(agent_b_path, env.agt_pos_list[1][0], env.agt_pos_list[1][1]))
+        fromPathMakeDirection(agent_a_path, env.agt_pos_list[0][0], env.agt_pos_list[0][1])
+        fromPathMakeDirection(agent_b_path, env.agt_pos_list[1][0], env.agt_pos_list[1][1])
         #action_list = [fromPathMakeDirection(agent_a_path, env.agt_pos_list[0][0], env.agt_pos_list[0][1]), fromPathMakeDirection(agent_b_path, env.agt_pos_list[1][0], env.agt_pos_list[1][1])]
         next_state, reward, done = env.step(fromPathMakeDirection(agent_a_path, env.agt_pos_list[0][0], env.agt_pos_list[0][1]), 0)
         next_state, reward, done = env.step(fromPathMakeDirection(agent_b_path, env.agt_pos_list[1][0], env.agt_pos_list[1][1]), 1)

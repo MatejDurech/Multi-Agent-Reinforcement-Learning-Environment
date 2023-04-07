@@ -5,8 +5,8 @@ import cv2
 
 
 class EnvCleaner(object):
-    def __init__(self, N_agent, map_size, seed):
-        self.map_size = map_size
+    def __init__(self, N_agent, seed):
+        self.map_size = 7
         self.seed = seed
         self.occupancy = self.generate_maze(seed)
         self.N_agent = N_agent
@@ -122,28 +122,28 @@ class EnvCleaner(object):
         for i in range(self.map_size):
             for j in range(self.map_size):
                 if self.occupancy[i, j] == 0:
-                    obs[i, j, 0] = 1.0
-                    obs[i, j, 1] = 1.0
-                    obs[i, j, 2] = 1.0
+                    obs[i, j, 0] = 1
+                    obs[i, j, 1] = 1
+                    obs[i, j, 2] = 1
                 if self.occupancy[i, j] == 2:
-                    obs[i, j, 0] = 0.0
-                    obs[i, j, 1] = 1.0
-                    obs[i, j, 2] = 0.0
+                    obs[i, j, 0] = 0
+                    obs[i, j, 1] = 1
+                    obs[i, j, 2] = 0
         for i in range(self.N_agent):
-            obs[self.agt_pos_list[i][0], self.agt_pos_list[i][1], 0] = 1.0
-            obs[self.agt_pos_list[i][0], self.agt_pos_list[i][1], 1] = 0.0
-            obs[self.agt_pos_list[i][0], self.agt_pos_list[i][1], 2] = 0.0
+            obs[self.agt_pos_list[i][0], self.agt_pos_list[i][1], 0] = 1
+            obs[self.agt_pos_list[i][0], self.agt_pos_list[i][1], 1] = 0
+            obs[self.agt_pos_list[i][0], self.agt_pos_list[i][1], 2] = 0
         return obs
 
     def reset(self):
         self.occupancy = self.generate_maze(self.seed)
         self.agt_pos_list = []
-        for i in range(self.N_agent):
-            self.agt_pos_list.append([1, 1])
+        self.agt_pos_list.append([1, 1])
+        self.agt_pos_list.append([1, 1])
 
     def render(self):
         obs = self.get_global_obs()
-        enlarge = 50
+        enlarge = 100
         new_obs = np.ones((self.map_size * enlarge, self.map_size * enlarge, 3))
         for i in range(self.map_size):
             for j in range(self.map_size):
@@ -154,8 +154,8 @@ class EnvCleaner(object):
                     cv2.rectangle(new_obs, (i * enlarge, j * enlarge), (i * enlarge + enlarge, j * enlarge + enlarge),
                                   (0, 0, 255), -1)
                 if obs[i][j][0] == 0.0 and obs[i][j][1] == 1.0 and obs[i][j][2] == 0.0:
-                    cv2.rectangle(new_obs, (i * enlarge, j * enlarge), (i * enlarge + enlarge, j * enlarge + enlarge),
-                                  (0, 255, 0), -1)
+                    cv2.circle(new_obs, (i * enlarge + 50, j * enlarge + 50), 30,
+                                  (0, 234, 100), -1)
         cv2.imshow('image', new_obs)
         cv2.waitKey(10)
 
