@@ -284,12 +284,12 @@ class Maze:
 			# if they are not in the same set they are not in the 
 			# same region in the maze
 			if set_a != set_b:
-				# add the portal between the cells, 
+				# add the portal between the cells,
 				# graph is undirected and will search
 				# [a][b] or [b][a]
-				edge_count+=1	
-				self.portals[key_a][key_b] = True 
-				self.portals[key_b][key_a] = True 
+				edge_count+=1
+				self.portals[key_a][key_b] = True
+				self.portals[key_b][key_a] = True
 				disjoint_set.union(set_a, set_b)
 
 	def move(self, direction):
