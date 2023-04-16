@@ -20,7 +20,20 @@ class Maze:
 	LEFT = (-1, 0)
 	RIGHT = (1,0)
 
-	def __init__(self, width, height, seed, symbols, scaling):
+
+
+	def __init__(self, width, height, seed):
+		symbols = {
+			# default symbols
+			'start': 'S',
+			'end': 'X',
+			'wall_v': '|',
+			'wall_h': '-',
+			'wall_c': '+',
+			'head': '#',
+			'tail': 'o',
+			'empty': ' '
+		}
 		'''
 		Default constructor to create an widthXheight maze
 		@params 
@@ -44,7 +57,7 @@ class Maze:
 		self.width = width
 		self.height = height
 		self.seed = seed
-		self.scaling = scaling
+		self.scaling = 1
 		self.path = [] # current path taken
 		self.player = (0,0) # players position
 		# self.items = [(x,y)] #TODO?? Add a list of possible items to collect for points?

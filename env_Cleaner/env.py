@@ -4,7 +4,7 @@ import random
 import cv2
 
 
-class EnvCleaner(object):
+class Env(object):
     def __init__(self, N_agent, seed):
         self.map_size = 7
         self.seed = seed
@@ -15,18 +15,7 @@ class EnvCleaner(object):
         self.agents.append([1, 1])
 
     def generate_maze(self, seed):
-        symbols = {
-            # default symbols
-            'start': 'S',
-            'end': 'X',
-            'wall_v': '|',
-            'wall_h': '-',
-            'wall_c': '+',
-            'head': '#',
-            'tail': 'o',
-            'empty': ' '
-        }
-        maze_obj = maze.Maze(int((self.map_size - 1) / 2), int((self.map_size - 1) / 2), seed, symbols, 1)
+        maze_obj = maze.Maze(int((self.map_size - 1) / 2), int((self.map_size - 1) / 2), seed)
         grid_map = maze_obj.to_np()
         for i in range(self.map_size):
             for j in range(self.map_size):
@@ -92,23 +81,6 @@ class EnvCleaner(object):
             if self.isDone(self.grid): done = True
             return next_state, reward, done
 
-    def get_global_obs(self):
-        obs = np.zeros((self.map_size, self.map_size, 3))
-        for i in range(self.map_size):
-            for j in range(self.map_size):
-                if self.grid[i, j] == 0:
-                    obs[i, j, 0] = 1
-                    obs[i, j, 1] = 1
-                    obs[i, j, 2] = 1
-                if self.grid[i, j] == 2:
-                    obs[i, j, 0] = 0
-                    obs[i, j, 1] = 1
-                    obs[i, j, 2] = 0
-        for i in range(self.N_agent):
-            obs[self.agents[i][0], self.agents[i][1], 0] = 1
-            obs[self.agents[i][0], self.agents[i][1], 1] = 0
-            obs[self.agents[i][0], self.agents[i][1], 2] = 0
-        return obs
 
     def reset(self):
         self.grid = self.generate_maze(self.seed)
@@ -117,21 +89,17 @@ class EnvCleaner(object):
         self.agents.append([1, 1])
 
     def render(self):
-        obs = self.get_global_obs()
         enlarge = 100
-        new_obs = np.ones((self.map_size * enlarge, self.map_size * enlarge, 3))
+        picture = np.ones((self.map_size * enlarge, self.map_size * enlarge, 3))
         for i in range(self.map_size):
             for j in range(self.map_size):
-                if obs[i][j][0] == 0.0 and obs[i][j][1] == 0.0 and obs[i][j][2] == 0.0:
-                    cv2.rectangle(new_obs, (i * enlarge, j * enlarge), (i * enlarge + enlarge, j * enlarge + enlarge),
-                                  (0, 0, 0), -1)
-                if obs[i][j][0] == 1.0 and obs[i][j][1] == 0.0 and obs[i][j][2] == 0.0:
-                    cv2.rectangle(new_obs, (i * enlarge, j * enlarge), (i * enlarge + enlarge, j * enlarge + enlarge),
-                                  (0, 0, 255), -1)
-                if obs[i][j][0] == 0.0 and obs[i][j][1] == 1.0 and obs[i][j][2] == 0.0:
-                    cv2.circle(new_obs, (i * enlarge + 50, j * enlarge + 50), 30,
-                               (0, 234, 100), -1)
-        cv2.imshow('image', new_obs)
+                if self.grid[i][j] == 1:
+                    cv2.rectangle(picture, (i * enlarge, j * enlarge), (i * enlarge + enlarge, j * enlarge + enlarge), (0, 0, 0), -1)
+                if self.grid[i][j] == 2:
+                    cv2.circle(picture, (i * enlarge + 50, j * enlarge + 50), 30, (0, 234, 100), -1)
+                if i == self.agents[0][0] and j == self.agents[0][1] or i == self.agents[1][0] and j == self.agents[1][1]:
+                    cv2.rectangle(picture, (i * enlarge, j * enlarge), (i * enlarge + enlarge, j * enlarge + enlarge), (0, 0, 255), -1)
+        cv2.imshow('image', picture)
         cv2.waitKey(10)
 
     def isDone(self, grid):
@@ -140,7 +108,7 @@ class EnvCleaner(object):
                 return False
         return True
 
-    def numOf2(self):
+    def numOfCoins(self):
         num = 0
         for row in self.grid:
             for cislo in row:
